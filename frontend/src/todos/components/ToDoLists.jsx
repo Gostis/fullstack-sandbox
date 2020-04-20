@@ -7,6 +7,7 @@ import ListItemText from "@material-ui/core/ListItemText";
 import ListItemIcon from "@material-ui/core/ListItemIcon";
 import ReceiptIcon from "@material-ui/icons/Receipt";
 import Typography from "@material-ui/core/Typography";
+import Checkbox from "@material-ui/core/Checkbox";
 import { ToDoListForm } from "./ToDoListForm";
 
 import axios from "axios";
@@ -55,6 +56,11 @@ export const ToDoLists = ({ style }) => {
                   <ReceiptIcon />
                 </ListItemIcon>
                 <ListItemText primary={toDoLists[key].title} />
+                <Checkbox
+                  disabled
+                  checked={toDoLists[key].done}
+                  inputProps={{ "aria-label": "disabled checked checkbox" }}
+                />
               </ListItem>
             ))}
           </List>

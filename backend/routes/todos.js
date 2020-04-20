@@ -83,7 +83,34 @@ router.put("/todolist/:id", async (req, res) => {
           }
         }
       });
+
+      const isDone = todoLists.todos.every((item) => item.done === true);
+      console.log(isDone);
+      todoLists.done = isDone;
       await todoLists.save().then(() => res.send({ msg: "Updated todo!" }));
+    } else {
+      return res.status(204).json({ msg: "No todolist with that ID" });
+    }
+  } catch (error) {
+    return res.status(400).json({
+      msg: error,
+    });
+  }
+});
+
+// @route PUT api/todos/todolist/:id
+// @desc PUT update a todo in todolist with (id)
+// @access Public
+router.put("/todolistDone/:id", async (req, res) => {
+  try {
+    const id = req.params.id;
+    const { done } = req.body;
+    const todoLists = await todoList.findOne({ id: id });
+
+    // If there is a todolist with that id
+    if (todoLists) {
+      todoLists.done = done;
+      await todoLists.save().then(() => res.send({ msg: "Updated todoList!" }));
     } else {
       return res.status(204).json({ msg: "No todolist with that ID" });
     }
@@ -128,7 +155,6 @@ router.post("/newTodoList/", async (req, res) => {
   try {
     const { id, title } = req.body;
     const todoLists = await todoList.findOne({ id: id });
-    console.log(todoLists);
 
     // Returned an existing todoList
     if (todoLists) {

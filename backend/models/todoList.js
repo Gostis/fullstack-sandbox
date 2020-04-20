@@ -13,6 +13,7 @@ const todoSchema = new Schema({
 const todoListSchema = new Schema({
   id: String,
   title: String,
+  done: { type: Boolean, default: false },
   todos: [todoSchema],
   date: {
     type: Date,
