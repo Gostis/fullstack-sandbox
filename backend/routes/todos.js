@@ -31,6 +31,33 @@ router.post("/todolist/:id", async (req, res) => {
   }
 });
 
+// @route GET api/todos/todolist/:id
+// @desc GET a todo from todolist with (id)
+// @access Public
+router.get("/todolist/:id", async (req, res) => {
+  try {
+    const id = req.params.id;
+    const { todoId } = req.body;
+    const todoLists = await todoList.findOne({ id: id });
+    let todoItem = {};
+    // If there is a todolist with that id
+    if (todoLists) {
+      todoLists.todos.map((ele) => {
+        if (String(ele._id) === todoId) {
+          todoItem = ele;
+        }
+      });
+      await todoLists.save().then(() => res.send(todoItem));
+    } else {
+      return res.status(204).json({ msg: "No todolist with that ID" });
+    }
+  } catch (error) {
+    return res.status(400).json({
+      msg: error,
+    });
+  }
+});
+
 // @route PUT api/todos/todolist/:id
 // @desc PUT update a todo in todolist with (id)
 // @access Public
@@ -39,19 +66,20 @@ router.put("/todolist/:id", async (req, res) => {
     const id = req.params.id;
     const { todoText, done, todoId } = req.body;
     const todoLists = await todoList.findOne({ id: id });
-    // console.log(todoLists.todos);
-
-    todoLists.todos.map((ele) => {
-      if (String(ele._id) === todoId) {
-        return (ele.done = true);
-      }
-    });
 
     // If there is a todolist with that id
     if (todoLists) {
       todoLists.todos.map((ele) => {
         if (String(ele._id) === todoId) {
-          return (ele.done = true);
+          if (todoText && typeof done !== "undefined") {
+            ele.done = done;
+            ele.todo = todoText;
+            return ele;
+          } else if (todoText) {
+            return (ele.todo = todoText);
+          } else if (typeof done !== "undefined") {
+            return (ele.done = done);
+          }
         }
       });
       await todoLists.save().then(() => res.send({ msg: "Updated todo!" }));

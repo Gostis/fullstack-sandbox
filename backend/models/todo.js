@@ -3,7 +3,7 @@ const Schema = mongoose.Schema;
 
 const todoSchema = new Schema({
   todo: String,
-  done: Boolean,
+  done: { type: Boolean, default: false },
   date: {
     type: Date,
     default: Date.now(),
