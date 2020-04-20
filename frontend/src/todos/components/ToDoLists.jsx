@@ -16,31 +16,9 @@ const sleep = (ms) => new Promise((resolve) => setTimeout(resolve, ms));
 const getPersonalTodos = async () => {
   try {
     const res = await axios.get("http://localhost:3001/api/todos");
-    console.log(res.data);
-    return sleep(1000).then(() =>
-      // Promise.resolve({
-      //   "0000000001": {
-      //     id: "0000000001",
-      //     title: "First List",
-      //     todos: ["First todo of first list!"],
-      //   },
-      //   "0000000002": {
-      //     id: "0000000002",
-      //     title: "Second List",
-      //     todos: ["First todo of second list!"],
-      //   },
-      // })
-      Promise.resolve(res.data)
-    );
-  } catch (error) {
-    console.log(error);
-  }
-};
+    console.log("hello");
 
-const getTodos = async () => {
-  try {
-    const res = await axios.get("http://localhost:3001/api/todos");
-    console.log(res.data);
+    return sleep(1000).then(() => Promise.resolve(res.data));
   } catch (error) {
     console.log(error);
   }
@@ -50,11 +28,11 @@ export const ToDoLists = ({ style }) => {
   const [toDoLists, setToDoLists] = useState([]);
   const [activeList, setActiveList] = useState();
 
+  const [activeKey, setActiveKey] = useState(null);
+
   useEffect(() => {
-    getTodos();
     getPersonalTodos().then(setToDoLists);
-  }, []);
-  console.log(toDoLists);
+  }, [activeKey]);
 
   if (!Object.keys(toDoLists).length) return null;
   return (
@@ -64,7 +42,15 @@ export const ToDoLists = ({ style }) => {
           <Typography component="h2">My ToDo Lists</Typography>
           <List>
             {Object.keys(toDoLists).map((key) => (
-              <ListItem key={key} button onClick={() => setActiveList(key)}>
+              <ListItem
+                key={key}
+                button
+                onBlur={() => {
+                  setActiveKey(key);
+                  console.log(key);
+                }}
+                onClick={() => setActiveList(key)}
+              >
                 <ListItemIcon>
                   <ReceiptIcon />
                 </ListItemIcon>
@@ -79,13 +65,9 @@ export const ToDoLists = ({ style }) => {
           key={activeList} // use key to make React recreate component to reset internal state
           toDoList={toDoLists[activeList]}
           saveToDoList={(id, { todos }) => {
-            const listToUpdate = toDoLists[id];
-            console.log(todos);
-
-            setToDoLists({
-              ...toDoLists,
-              [id]: { ...listToUpdate, todos },
-            });
+            let tempArr = [...toDoLists];
+            tempArr[activeList].todos = todos;
+            setToDoLists(tempArr);
           }}
         />
       )}

@@ -38,19 +38,19 @@ const useStyles = makeStyles({
 export const ToDoListForm = ({ toDoList, saveToDoList }) => {
   const classes = useStyles();
   const [todos, setTodos] = useState(toDoList.todos);
-  console.log(todos);
 
   const handleSubmit = (event) => {
     event.preventDefault();
     saveToDoList(toDoList.id, { todos });
   };
 
-  const updateTodoText = async (todo) => {
+  const updateTodoText = async (todo, newText) => {
     try {
       const res = await axios.put(
         `http://localhost:3001/api/todos/todolist/${toDoList.id}`,
         {
           todoId: todo._id,
+          todoText: newText,
         }
       );
     } catch (error) {
@@ -63,11 +63,10 @@ export const ToDoListForm = ({ toDoList, saveToDoList }) => {
       const res = await axios.put(
         `http://localhost:3001/api/todos/todolist/${toDoList.id}`,
         {
-          done: !todo.done,
+          done: todo.done,
+          todoId: todo._id,
         }
       );
-
-      console.log(res);
     } catch (error) {
       console.log(error);
     }
@@ -76,11 +75,9 @@ export const ToDoListForm = ({ toDoList, saveToDoList }) => {
   const removeTodo = async (todo) => {
     try {
       const res = await axios.delete(
-        `http://localhost:3001/api/todos/todolist/${toDoList.id}`,
-        {
-          id: todo.id,
-        }
+        `http://localhost:3001/api/todos/todolist/${toDoList.id}/${todo._id}`
       );
+      console.log(res);
     } catch (error) {
       console.log(error);
     }
@@ -92,9 +89,10 @@ export const ToDoListForm = ({ toDoList, saveToDoList }) => {
         `http://localhost:3001/api/todos/todolist/${toDoList.id}`,
         {
           todoText: newTodoText,
-          done: false,
         }
       );
+
+      return res.data.todos[res.data.todos.length - 1];
     } catch (error) {
       console.log(error);
     }
@@ -108,6 +106,7 @@ export const ToDoListForm = ({ toDoList, saveToDoList }) => {
           todoId: todoId,
         }
       );
+      return res;
     } catch (error) {
       console.log(error);
     }
@@ -125,19 +124,33 @@ export const ToDoListForm = ({ toDoList, saveToDoList }) => {
               </Typography>
               <Checkbox
                 checked={todo.done}
-                onChange={() => updateTodoStatus(todo)}
+                onChange={async () => {
+                  let tempTodo = todo;
+                  tempTodo.done = !todo.done;
+                  setTodos([
+                    ...todos.slice(0, index),
+                    tempTodo,
+                    ...todos.slice(index + 1),
+                  ]);
+                  await updateTodoStatus(todo);
+                  saveToDoList(toDoList.id, { todos });
+                }}
                 inputProps={{ "aria-label": "primary checkbox" }}
               />
               <TextField
                 label="What to do?"
                 value={todo.todo}
+                onBlur={async (e) => {
+                  await updateTodoText(todo, e.target.value);
+                  saveToDoList(toDoList.id, { todos });
+                }}
                 onChange={(event) => {
-                  console.log(event.target.value);
-
+                  let tempTodo = todo;
+                  tempTodo.todo = event.target.value;
                   setTodos([
                     // immutable update
                     ...todos.slice(0, index),
-                    event.target.value,
+                    tempTodo,
                     ...todos.slice(index + 1),
                   ]);
                 }}
@@ -147,12 +160,14 @@ export const ToDoListForm = ({ toDoList, saveToDoList }) => {
                 size="small"
                 color="secondary"
                 className={classes.standardSpace}
-                onClick={() => {
+                onClick={async () => {
+                  await removeTodo(todo);
                   setTodos([
                     // immutable delete
                     ...todos.slice(0, index),
                     ...todos.slice(index + 1),
                   ]);
+                  saveToDoList(toDoList.id, { todos });
                 }}
               >
                 <DeleteIcon />
@@ -163,8 +178,11 @@ export const ToDoListForm = ({ toDoList, saveToDoList }) => {
             <Button
               type="button"
               color="primary"
-              onClick={() => {
-                setTodos([...todos, ""]);
+              onClick={async () => {
+                const temp = await addTodo("");
+
+                setTodos([...todos, temp]);
+                saveToDoList(toDoList.id, { todos });
               }}
             >
               Add Todo <AddIcon />

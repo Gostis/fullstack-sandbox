@@ -65,6 +65,7 @@ router.put("/todolist/:id", async (req, res) => {
   try {
     const id = req.params.id;
     const { todoText, done, todoId } = req.body;
+
     const todoLists = await todoList.findOne({ id: id });
 
     // If there is a todolist with that id
@@ -96,17 +97,20 @@ router.put("/todolist/:id", async (req, res) => {
 // @route DELETE api/todos/todolist/:todoListId/:todoId
 // @desc DELETE a todo with a certain ID
 // @access Public
-router.delete("/todolist/:todoListId", async (req, res) => {
+router.delete("/todolist/:todoListId/:id", async (req, res) => {
   try {
-    const { todoListId } = req.params;
-    const { id } = req.body;
+    const { todoListId, id } = req.params;
+
     const todoLists = await todoList.findOne({ id: todoListId });
 
     // If there is a todolist with that id
     if (todoLists) {
       todoLists.todos.pull({ _id: id });
       await todoLists.save();
-      return res.status(200).json({ msg: "todo deleted" });
+
+      return res
+        .status(200)
+        .json({ msg: "todo deleted", list: todoLists.todos });
     } else {
       return res.status(204).json({ msg: "No todolist with that ID" });
     }
