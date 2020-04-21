@@ -1,0 +1,3 @@
+{
+  "mongoURI": "mongodb+srv://<usernamne>:<password>@db-hmoc9.mongodb.net/todoListDB?retryWrites=true&w=majority"
+}
