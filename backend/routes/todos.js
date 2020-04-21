@@ -1,6 +1,7 @@
 const express = require("express");
 const router = express.Router();
 
+// Schemas
 const todoList = require("../models/todoList");
 const todo = require("../models/todo");
 
@@ -70,13 +71,14 @@ router.put("/todolist/:id", async (req, res) => {
 
     // If there is a todolist with that id
     if (todoLists) {
+      // Changing the todo with (todoId) based on req.body data
       todoLists.todos.map((ele) => {
         if (String(ele._id) === todoId) {
           if (todoText && typeof done !== "undefined") {
             ele.done = done;
             ele.todo = todoText;
             return ele;
-          } else if (todoText) {
+          } else if (typeof todoText !== "undefined") {
             return (ele.todo = todoText);
           } else if (typeof done !== "undefined") {
             return (ele.done = done);
@@ -84,9 +86,10 @@ router.put("/todolist/:id", async (req, res) => {
         }
       });
 
+      // Sets todolist to done if all items are true
       const isDone = todoLists.todos.every((item) => item.done === true);
-
       todoLists.done = isDone;
+
       await todoLists.save().then(() => res.send({ msg: "Updated todo!" }));
     } else {
       return res.status(204).json({ msg: "No todolist with that ID" });
@@ -99,7 +102,7 @@ router.put("/todolist/:id", async (req, res) => {
 });
 
 // @route PUT api/todos/todolist/:id
-// @desc PUT update a todo in todolist with (id)
+// @desc PUT update a todolist to done with (id)
 // @access Public
 router.put("/todolistDone/:id", async (req, res) => {
   try {
@@ -122,7 +125,7 @@ router.put("/todolistDone/:id", async (req, res) => {
 });
 
 // @route DELETE api/todos/todolist/:todoListId/:todoId
-// @desc DELETE a todo with a certain ID
+// @desc DELETE a todo with with id
 // @access Public
 router.delete("/todolist/:todoListId/:id", async (req, res) => {
   try {

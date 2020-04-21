@@ -14,6 +14,7 @@ import axios from "axios";
 
 const sleep = (ms) => new Promise((resolve) => setTimeout(resolve, ms));
 
+// Get todos from backend
 const getPersonalTodos = async () => {
   try {
     const res = await axios.get("http://localhost:3001/api/todos");
@@ -63,6 +64,7 @@ export const ToDoLists = ({ style }) => {
             let tempArr = [...toDoLists];
             tempArr[activeList].todos = todos;
 
+            // Checking if all todos are done
             const isDone = tempArr[activeList].todos.every(
               (item) => item.done === true
             );

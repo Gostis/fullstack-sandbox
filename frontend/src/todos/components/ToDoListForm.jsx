@@ -44,6 +44,7 @@ export const ToDoListForm = ({ toDoList, saveToDoList }) => {
     saveToDoList(toDoList.id, { todos });
   };
 
+  // All routes
   const updateTodoText = async (todo, newText) => {
     try {
       const res = await axios.put(
@@ -111,7 +112,7 @@ export const ToDoListForm = ({ toDoList, saveToDoList }) => {
       console.log(error);
     }
   };
-
+  // For auto saving when todos array changes
   useEffect(() => {
     saveToDoList(toDoList.id, { todos });
   }, [todos]);
@@ -144,6 +145,7 @@ export const ToDoListForm = ({ toDoList, saveToDoList }) => {
               <TextField
                 label="What to do?"
                 value={todo.todo}
+                // On Blur because we only want to change when the user is done
                 onBlur={async (e) => {
                   await updateTodoText(todo, e.target.value);
                 }}

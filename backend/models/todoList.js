@@ -1,6 +1,7 @@
 const mongoose = require("mongoose");
 const Schema = mongoose.Schema;
 
+// Todo Schema for db needs to be written twice to be used in parent schema
 const todoSchema = new Schema({
   todo: String,
   done: { type: Boolean, default: false },
@@ -9,7 +10,7 @@ const todoSchema = new Schema({
     default: Date.now(),
   },
 });
-
+// Todolist Schema
 const todoListSchema = new Schema({
   id: String,
   title: String,
