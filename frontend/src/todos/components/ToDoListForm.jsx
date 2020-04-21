@@ -112,6 +112,10 @@ export const ToDoListForm = ({ toDoList, saveToDoList }) => {
     }
   };
 
+  useEffect(() => {
+    saveToDoList(toDoList.id, { todos });
+  }, [todos]);
+
   return (
     <Card className={classes.card}>
       <CardContent>
@@ -133,7 +137,6 @@ export const ToDoListForm = ({ toDoList, saveToDoList }) => {
                     tempTodo,
                     ...todos.slice(index + 1),
                   ]);
-                  saveToDoList(toDoList.id, { todos });
                   await updateTodoStatus(todo);
                 }}
                 inputProps={{ "aria-label": "primary checkbox" }}
@@ -153,7 +156,6 @@ export const ToDoListForm = ({ toDoList, saveToDoList }) => {
                     tempTodo,
                     ...todos.slice(index + 1),
                   ]);
-                  saveToDoList(toDoList.id, { todos });
                 }}
                 className={classes.textField}
               />
@@ -162,13 +164,13 @@ export const ToDoListForm = ({ toDoList, saveToDoList }) => {
                 color="secondary"
                 className={classes.standardSpace}
                 onClick={async () => {
-                  await removeTodo(todo);
                   setTodos([
                     // immutable delete
                     ...todos.slice(0, index),
                     ...todos.slice(index + 1),
                   ]);
-                  saveToDoList(toDoList.id, { todos });
+
+                  await removeTodo(todo);
                 }}
               >
                 <DeleteIcon />
@@ -182,7 +184,6 @@ export const ToDoListForm = ({ toDoList, saveToDoList }) => {
               onClick={async () => {
                 const temp = await addTodo("");
                 setTodos([...todos, temp]);
-                saveToDoList(toDoList.id, { todos });
               }}
             >
               Add Todo <AddIcon />

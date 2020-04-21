@@ -85,7 +85,7 @@ router.put("/todolist/:id", async (req, res) => {
       });
 
       const isDone = todoLists.todos.every((item) => item.done === true);
-      console.log(isDone);
+
       todoLists.done = isDone;
       await todoLists.save().then(() => res.send({ msg: "Updated todo!" }));
     } else {

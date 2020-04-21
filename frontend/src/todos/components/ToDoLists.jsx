@@ -40,14 +40,7 @@ export const ToDoLists = ({ style }) => {
           <Typography component="h2">My ToDo Lists</Typography>
           <List>
             {Object.keys(toDoLists).map((key) => (
-              <ListItem
-                key={key}
-                button
-                onBlur={() => {
-                  getPersonalTodos().then(setToDoLists);
-                }}
-                onClick={() => setActiveList(key)}
-              >
+              <ListItem key={key} button onClick={() => setActiveList(key)}>
                 <ListItemIcon>
                   <ReceiptIcon />
                 </ListItemIcon>
@@ -69,6 +62,12 @@ export const ToDoLists = ({ style }) => {
           saveToDoList={(id, { todos }) => {
             let tempArr = [...toDoLists];
             tempArr[activeList].todos = todos;
+
+            const isDone = tempArr[activeList].todos.every(
+              (item) => item.done === true
+            );
+            tempArr[activeList].done = isDone;
+
             setToDoLists(tempArr);
           }}
         />
