@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import { makeStyles } from "@material-ui/styles";
 import {
   TextField,
@@ -127,13 +127,14 @@ export const ToDoListForm = ({ toDoList, saveToDoList }) => {
                 onChange={async () => {
                   let tempTodo = todo;
                   tempTodo.done = !todo.done;
+
                   setTodos([
                     ...todos.slice(0, index),
                     tempTodo,
                     ...todos.slice(index + 1),
                   ]);
-                  await updateTodoStatus(todo);
                   saveToDoList(toDoList.id, { todos });
+                  await updateTodoStatus(todo);
                 }}
                 inputProps={{ "aria-label": "primary checkbox" }}
               />
@@ -142,7 +143,6 @@ export const ToDoListForm = ({ toDoList, saveToDoList }) => {
                 value={todo.todo}
                 onBlur={async (e) => {
                   await updateTodoText(todo, e.target.value);
-                  saveToDoList(toDoList.id, { todos });
                 }}
                 onChange={(event) => {
                   let tempTodo = todo;
@@ -153,6 +153,7 @@ export const ToDoListForm = ({ toDoList, saveToDoList }) => {
                     tempTodo,
                     ...todos.slice(index + 1),
                   ]);
+                  saveToDoList(toDoList.id, { todos });
                 }}
                 className={classes.textField}
               />
@@ -180,7 +181,6 @@ export const ToDoListForm = ({ toDoList, saveToDoList }) => {
               color="primary"
               onClick={async () => {
                 const temp = await addTodo("");
-
                 setTodos([...todos, temp]);
                 saveToDoList(toDoList.id, { todos });
               }}

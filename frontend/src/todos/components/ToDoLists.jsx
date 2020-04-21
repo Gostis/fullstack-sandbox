@@ -17,7 +17,6 @@ const sleep = (ms) => new Promise((resolve) => setTimeout(resolve, ms));
 const getPersonalTodos = async () => {
   try {
     const res = await axios.get("http://localhost:3001/api/todos");
-    console.log("hello");
 
     return sleep(1000).then(() => Promise.resolve(res.data));
   } catch (error) {
@@ -29,11 +28,9 @@ export const ToDoLists = ({ style }) => {
   const [toDoLists, setToDoLists] = useState([]);
   const [activeList, setActiveList] = useState();
 
-  const [activeKey, setActiveKey] = useState(null);
-
   useEffect(() => {
     getPersonalTodos().then(setToDoLists);
-  }, [activeKey]);
+  }, []);
 
   if (!Object.keys(toDoLists).length) return null;
   return (
@@ -47,8 +44,7 @@ export const ToDoLists = ({ style }) => {
                 key={key}
                 button
                 onBlur={() => {
-                  setActiveKey(key);
-                  console.log(key);
+                  getPersonalTodos().then(setToDoLists);
                 }}
                 onClick={() => setActiveList(key)}
               >
